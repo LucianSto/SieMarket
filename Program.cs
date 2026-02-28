@@ -1,34 +1,78 @@
-﻿using SieMarket.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using SieMarket.Models;
+using SieMarket.Services;
 
-var order = new Order
+var orders = new List<Order>
 {
-    Id = 1,
-    CustomerId = "67",
-    Items =
+    new Order
     {
-        new OrderItem
+        CustomerId = "George",
+        Items =
         {
-            ProductName = "Laptop",
-            Quantity = 1,
-            UnitPrice = 600m // m decimal
-        },
-        new OrderItem
+            new OrderItem { 
+                ProductName = "Laptop", 
+                Quantity = 1, 
+                UnitPrice = 600m } // m decimal
+        }
+    },
+
+    new Order
+    {
+        CustomerId = "Maria",
+        Items =
         {
-            ProductName = "Mouse",
-            Quantity = 2,
-            UnitPrice = 25m // m decimal
+            new OrderItem {
+                ProductName = "Phone",
+                Quantity = 1,
+                UnitPrice = 700m } // m decimal
+        }
+    },
+    new Order
+    {
+        CustomerId = "George",
+        Items =
+        {
+            new OrderItem {
+                ProductName = "Headphones",
+                Quantity = 1,
+                UnitPrice = 200m } // m decimal
         }
     }
 };
 
-// display the total value of all items before discount
-Console.WriteLine($"Subtotal: {order.Subtotal} EUR");
+
+// take the first order
+var firstOrder = orders[0];
+
+Console.WriteLine($"Customer: {firstOrder.CustomerId}");
+
+// display the total value of all items before discount 
+Console.WriteLine($"Subtotal: {firstOrder.Subtotal} EUR");
 
 // display the discount amount applied (> 500EUR)
-Console.WriteLine($"Discount: {order.DiscountAmount} EUR");
+Console.WriteLine($"Discount: {firstOrder.DiscountAmount} EUR");
 
 // display the final total after applying the discount policy
-Console.WriteLine($"Total: {order.Total} EUR");
+Console.WriteLine($"Total: {firstOrder.Total} EUR\n");
 
-// prevent the console window from closing immediately
-Console.ReadKey();
+// how much each customer spent
+var spendingPerCustomer = orders
+    .GroupBy(o => o.CustomerId)
+    .Select(group => new
+    {
+        Customer = group.Key,
+        TotalSpent = group.Sum(o => o.Total)
+    });
+
+foreach (var customer in spendingPerCustomer)
+{
+    Console.WriteLine($"{customer.Customer} spent (total): {customer.TotalSpent} EUR");
+}
+
+// top spenders
+var service = new OrderService();
+var topCustomer = service.GetTopSpendingCustomer(orders);
+
+Console.WriteLine($"\nTop spending customer: {topCustomer}");
