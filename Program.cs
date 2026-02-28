@@ -25,7 +25,7 @@ var orders = new List<Order>
         {
             new OrderItem {
                 ProductName = "Phone",
-                Quantity = 1,
+                Quantity = 2,
                 UnitPrice = 700m } // m decimal
         }
     },
@@ -75,4 +75,12 @@ foreach (var customer in spendingPerCustomer)
 var service = new OrderService();
 var topCustomer = service.GetTopSpendingCustomer(orders);
 
-Console.WriteLine($"\nTop spending customer: {topCustomer}");
+Console.WriteLine($"\nTop spending customer: {topCustomer}\n");
+
+// most popular products and their total quantity sold
+var popularProducts = service.GetPopularProducts(orders);
+
+foreach (var product in popularProducts)
+{
+    Console.WriteLine($"{product.ProductName} sold: {product.TotalQuantity} units");
+}
